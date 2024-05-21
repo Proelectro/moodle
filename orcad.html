@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OCR with OCRAD.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/ocrad.js/ocrad.min.js"></script> <!-- Load OCRAD.js -->
+</head>
+<body>
+    <h1>OCR with OCRAD.js</h1>
+
+    <!-- Input for selecting an image -->
+    <input type="file" id="imageInput" />
+    <button id="processButton">Process Image</button>
+
+    <!-- Area to display OCR results -->
+    <pre id="ocrOutput"></pre>
+
+    <script>
+    document.getElementById('processButton').addEventListener('click', () => {
+        const input = document.getElementById('imageInput');
+        const output = document.getElementById('ocrOutput');
+
+        if (input.files.length > 0) {
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = () => {
+                    // Create a canvas and draw the image onto it
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(img, 0, 0);
+
+                    // Use OCRAD to perform OCR on the canvas
+                    const text = OCRAD(canvas); // OCRAD works on canvas elements
+                    output.textContent = `Recognized text:\n${text}`;
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+    </script>
+</body>
+</html>
